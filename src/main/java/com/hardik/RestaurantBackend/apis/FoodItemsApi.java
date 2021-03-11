@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/addfooditems")
+@RequestMapping("/api/fooditem")
 public class FoodItemsApi {
 
     @Autowired
@@ -20,7 +20,7 @@ public class FoodItemsApi {
         return foodItemRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping(value = "/add")
     @ResponseStatus(HttpStatus.OK)
     public void create(@RequestBody FoodItems foodItems){
         foodItemRepository.save(foodItems);

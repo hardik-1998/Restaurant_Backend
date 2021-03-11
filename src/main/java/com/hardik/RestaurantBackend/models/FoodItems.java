@@ -2,55 +2,58 @@ package com.hardik.RestaurantBackend.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Type;
+import org.hibernate.metamodel.model.domain.IdentifiableDomainType;
 
 import javax.persistence.*;
 import java.util.Arrays;
-import java.util.Date;
+
+
 
 @Entity
-@Table(name = "food_items")
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-
+@Table
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class FoodItems {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     private Long id;
 
 
-    @Column(name = "Food_Item_Name")
-    private String foodItemName;
+    private String name;
 
-    @Column(name = "Category")
     private String category;
 
-    @Column(name = "Price")
     private double price;
 
-    @Column(name = "Available")
     private String available;
-
-    @Column(name = "Description")
     private String description;
 
-    @Column(name = "Food_Item_Image")
-    private byte[] foodItemImage;
-
-
-    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="MM-dd-yyyy")
-    @Column(name = "Date_Create")
-    private Date createDate;
+    @Lob
+    @Type(type="org.hibernate.type.BinaryType")
+    private byte[] image;
 
     @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="MM-dd-yyyy")
-    @Column(name = "Date_Update")
-    private Date updateDate;
+    private String createDate;
 
-    public String getFoodItemName() {
-        return foodItemName;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="MM-dd-yyyy")
+    private String updateDate;
+
+    public FoodItems(){}
+
+    public Long getId() {
+        return id;
     }
 
-    public void setFoodItemName(String foodItemName) {
-        this.foodItemName = foodItemName;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCategory() {
@@ -85,51 +88,42 @@ public class FoodItems {
         this.description = description;
     }
 
-    public byte[] getFoodItemImage() {
-        return foodItemImage;
+    public byte[] getImage() {
+        return image;
     }
 
-    public void setFoodItemImage(byte[] foodItemImage) {
-        this.foodItemImage = foodItemImage;
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
-    public Date getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
 
     @Override
     public String toString() {
         return "FoodItems{" +
                 "id=" + id +
-                ", foodItemName='" + foodItemName + '\'' +
+                ", name='" + name + '\'' +
                 ", category='" + category + '\'' +
                 ", price=" + price +
                 ", available='" + available + '\'' +
                 ", description='" + description + '\'' +
-                ", foodItemImage=" + Arrays.toString(foodItemImage) +
-                ", createDate=" + createDate +
-                ", updateDate=" + updateDate +
+                ", image=" + Arrays.toString(image) +
+                ", createDate='" + createDate + '\'' +
+                ", updateDate='" + updateDate + '\'' +
                 '}';
     }
 }
