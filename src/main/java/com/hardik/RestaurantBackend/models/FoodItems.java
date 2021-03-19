@@ -6,16 +6,18 @@ import org.hibernate.annotations.Type;
 import org.hibernate.metamodel.model.domain.IdentifiableDomainType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Arrays;
-
+import java.util.Date;
 
 
 @Entity
 @Table
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class FoodItems {
+public class FoodItems implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, updatable = false)
     private Long id;
 
 
@@ -32,11 +34,11 @@ public class FoodItems {
     @Type(type="org.hibernate.type.BinaryType")
     private byte[] image;
 
-    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="MM-dd-yyyy")
-    private String createDate;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+    private Date createDate;
 
-    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="MM-dd-yyyy")
-    private String updateDate;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+    private Date updateDate;
 
     public FoodItems(){}
 
@@ -96,19 +98,19 @@ public class FoodItems {
         this.image = image;
     }
 
-    public String getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public String getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(String updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 
