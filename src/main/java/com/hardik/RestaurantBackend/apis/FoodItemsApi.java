@@ -1,5 +1,6 @@
 package com.hardik.RestaurantBackend.apis;
 
+import java.util.Base64;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -19,7 +20,11 @@ import org.apache.commons.io.FilenameUtils;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +37,50 @@ public class FoodItemsApi {
     @Autowired
     ServletContext context;
 
+    @GetMapping("/fooditems")
+    public List<FoodItems> getAllarticles() {
+        System.out.println("Get all articles...");
+
+        List<FoodItems> foodItems = new ArrayList<>();
+        foodItemService.getAllFoodItems().forEach(foodItems::add);
+
+        return foodItems;
+    }
+
     @GetMapping(value = "/all")
-    public ResponseEntity<List<FoodItems>> getAllFoodItem(){
-        List<FoodItems> foodItems = foodItemService.getAllFoodItems();
-        return new ResponseEntity<>(foodItems,HttpStatus.OK);
+    public ResponseEntity<List<String>> getAllFoodItem(){
+        List<String> listfooditem = new ArrayList<String>();
+        String filesPath = context.getRealPath("/Images");
+        File filefolder = new File(filesPath);
+        if (filefolder != null)
+        {
+            for (File file :filefolder.listFiles())
+            {
+                if(!file.isDirectory())
+                {
+                    String encodeBase64 = null;
+                    try {
+                        String extension = FilenameUtils.getExtension(file.getName());
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        byte[] bytes = new byte[(int)file.length()];
+                        fileInputStream.read(bytes);
+                        encodeBase64 = Base64.getEncoder().encodeToString(bytes);
+                        listfooditem.add("data:image/"+extension+";base64,"+encodeBase64);
+                        fileInputStream.close();
+                    }catch (Exception e){
+
+                    }
+                }
+            }
+        }
+        return new ResponseEntity<List<String>>(listfooditem,HttpStatus.OK);
+    }
+
+
+    @GetMapping(path = "/imagefooditem/{id}")
+    public byte[] getImage(@PathVariable("id") Long id) throws Exception{
+        FoodItems foodItem = foodItemService.findFoodItemById(id);
+        return Files.readAllBytes(Paths.get(context.getRealPath("/Images/")+foodItem.getFilename()));
     }
 
     @GetMapping(value = "/find/{id}")
