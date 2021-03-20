@@ -1,6 +1,8 @@
 package com.hardik.RestaurantBackend.apis;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hardik.RestaurantBackend.messages.Response;
 import com.hardik.RestaurantBackend.models.FoodItems;
@@ -12,6 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.servlet.ServletContext;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +29,8 @@ public class FoodItemsApi {
 
     @Autowired
     private FoodItemService foodItemService;
+    @Autowired
+    ServletContext context;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<FoodItems>> getAllFoodItem(){
@@ -39,9 +48,26 @@ public class FoodItemsApi {
 
     @PostMapping(value = "/add")
     public ResponseEntity<Response> addfooditem(@RequestParam("file") MultipartFile file,
-                                                @RequestParam("fooditemdata") String fooditemdata) throws JsonProcessingException, IOException {
+                                                @RequestParam("fooditemdata") String fooditemdata) throws JsonParseException, JsonMappingException, Exception {
         FoodItems foodItems = new ObjectMapper().readValue(fooditemdata,FoodItems.class);
-        foodItems.setImage(file.getBytes());
+        boolean isExit = new File(context.getRealPath("/Images/")).exists();
+        if (!isExit)
+        {
+            new File (context.getRealPath("/Images/")).mkdir();
+            System.out.println("mk dir.............");
+        }
+        String filename = file.getOriginalFilename();
+        String newFileName = FilenameUtils.getBaseName(filename)+"."+FilenameUtils.getExtension(filename);
+        File serverFile = new File (context.getRealPath("/Images/"+File.separator+newFileName));
+        try
+        {
+            System.out.println("Image");
+            FileUtils.writeByteArrayToFile(serverFile,file.getBytes());
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        foodItems.setFilename(newFileName);
         foodItems.setCreateDate(new Date());
         FoodItems dbFoodItem = foodItemService.addFoodItem(foodItems);
         if (dbFoodItem!=null){
@@ -56,7 +82,6 @@ public class FoodItemsApi {
     public ResponseEntity<Response> updatefooditem(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("fooditemdata") String fooditemdata) throws JsonProcessingException, IOException {
         FoodItems foodItems = new ObjectMapper().readValue(fooditemdata,FoodItems.class);
-        foodItems.setImage(file.getBytes());
         foodItems.setUpdateDate(new Date());
         FoodItems dbFoodItem = foodItemService.updateFoodItem(foodItems);
         if (dbFoodItem!=null){

@@ -29,10 +29,7 @@ public class FoodItems implements Serializable {
 
     private String available;
     private String description;
-
-    @Lob
-    @Type(type="org.hibernate.type.BinaryType")
-    private byte[] image;
+    private String filename;
 
     @JsonFormat(shape =JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date createDate;
@@ -90,12 +87,12 @@ public class FoodItems implements Serializable {
         this.description = description;
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public Date getCreateDate() {
@@ -123,7 +120,7 @@ public class FoodItems implements Serializable {
                 ", price=" + price +
                 ", available='" + available + '\'' +
                 ", description='" + description + '\'' +
-                ", image=" + Arrays.toString(image) +
+                ", image=" + filename + '\'' +
                 ", createDate='" + createDate + '\'' +
                 ", updateDate='" + updateDate + '\'' +
                 '}';
